@@ -6,11 +6,14 @@ import { View, Text, Dimensions, StyleSheet, ScrollView } from 'react-native';
 const {width:SCREEN_WIDTH} = Dimensions.get("window");
 //console.log(SCREEN_WIDTH);
 
+const API_KEY=`a01cd9f1d0f271a99b9bedd88ea72a5a`;
+
 export default function App() {
 	const [city, setCity]=useState("Loading...");
-  const [location, setLocation] = useState();
+  //const [location, setLocation] = useState();
+  const [days, setDays]=useState([]);
   const [ok, setOk] = useState(true);
-  const ask = async () => {
+  const getWeather = async () => {
     const {granted} = await Location.requestForegroundPermissionsAsync();
     if(!granted){
       setOk(false);
@@ -21,10 +24,13 @@ export default function App() {
       {useGoogleMaps:false}
     );
     setCity(location[0].city);
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`);
+    const json = await response.json();
+    console.log(json);
   };
 
   useEffect(() => {
-    ask();
+    getWeather();
   }, []);
 
 
@@ -38,7 +44,7 @@ export default function App() {
         pagingEnabled 
         showsHorizontalScrollIndicator={false}
         horizontal 
-        ContentContainerstyle={styles.weather}
+        contentContainerStyle={styles.weather}
       >
         <View style={styles.day}>
           <Text style={styles.temp}>27</Text>
@@ -86,7 +92,7 @@ const styles = StyleSheet.create({
   },
   weather:{
     //flex:3,
-    backgroundColor:"blue"
+    //backgroundColor:"blue"
   },
   day:{
     width:SCREEN_WIDTH,
